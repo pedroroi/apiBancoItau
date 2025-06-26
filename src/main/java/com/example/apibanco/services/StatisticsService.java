@@ -21,10 +21,7 @@ public class StatisticsService {
     public Map<String, Object> calcularEstatisticas() {
         OffsetDateTime limite = OffsetDateTime.now().minusSeconds(60);
 
-        List<Transaction> ultimasTransacoes = transactionRepository.findAll()
-                .stream()
-                .filter(t -> t.getDataHora().isAfter(limite))
-                .toList();
+        List<Transaction> ultimasTransacoes = transactionRepository.findByDataHoraAfter(limite);
 
         Map<String, Object> resultado = new HashMap<>();
 
@@ -34,19 +31,19 @@ public class StatisticsService {
             resultado.put("avg", 0.0);
             resultado.put("min", 0.0);
             resultado.put("max", 0.0);
-            return resultado;
+
+        } else {
+
+            DoubleSummaryStatistics stats = ultimasTransacoes.stream()
+                    .mapToDouble(Transaction::getValor)
+                    .summaryStatistics();
+
+            resultado.put("count", stats.getCount());
+            resultado.put("sum", stats.getSum());
+            resultado.put("avg", stats.getAverage());
+            resultado.put("min", stats.getMin());
+            resultado.put("max", stats.getMax());
         }
-
-        DoubleSummaryStatistics stats = ultimasTransacoes.stream()
-                .mapToDouble(Transaction::getValor)
-                .summaryStatistics();
-
-        resultado.put("count", stats.getCount());
-        resultado.put("sum", stats.getSum());
-        resultado.put("avg", stats.getAverage());
-        resultado.put("min", stats.getMin());
-        resultado.put("max", stats.getMax());
-
         return resultado;
     }
 }
