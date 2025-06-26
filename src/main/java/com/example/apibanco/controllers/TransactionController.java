@@ -36,7 +36,7 @@ public class TransactionController {
     }
 
     @GetMapping("/transacao")
-    public ResponseEntity<List<Transaction>> imprimirTransacoes(@Valid @RequestBody TransactionDTO transactionDTO) {
+    public ResponseEntity<List<Transaction>> imprimirTransacoes() {
 
         List<Transaction> transactions = transactionService.imprimirTransacoes();
 
